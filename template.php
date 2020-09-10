@@ -11,10 +11,10 @@
 
 <body>
     <h1> Gerenciador de Tarefas</h1>
-    <form method="get">
+    <form>
         <fieldset>
             <legend>Nova Tarefa</legend>
-            <label for="">Tarefa:
+            <label>Tarefa:
                 <input type="text" name="nome" />
             </label>
             <label>Descriçao (Opicional):
@@ -34,7 +34,7 @@
             </fieldset>
             <label>
                 Tarefa Concluida:
-                <input type="checkbox" name="concluida" value="sim" />
+                <input type="checkbox" name="concluida" value="1" />
             </label>
 
             <input type="submit" value="Cadastrar">
@@ -52,9 +52,9 @@
             <tr>
                 <td><?php echo $tarefa['nome']; ?></td>
                 <td><?php echo $tarefa['descricao']; ?></td>
-                <td><?php echo $tarefa['prazo']; ?></td>
-                <td><?php echo $tarefa['prioridade']; ?></td>
-                <td><?php echo $tarefa['concluida']; ?></td>
+                <td><?php echo traduz_data_para_exibir($tarefa['prazo']); ?></td>
+                <td><?php echo traduz_prioridade($tarefa['prioridade']); ?></td>
+                <td><?php echo traduz_concluida($tarefa['concluida']); ?></td>
             </tr>
         <?php endforeach; ?>
     </table>
