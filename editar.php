@@ -3,47 +3,49 @@ session_start();
 require "banco.php";
 require "ajudantes.php";
 
-$exibir_tabela = true;
-$tarefa = [
-    'id' => 0,
-    'nome' => '',
-    'descricao' => '',
-    'prazo' => '',
-    'prioridade' => 1,
-    'concluida' => ''
-];
-
+$exibir_tabela = false;
 
 if (array_key_exists('nome', $_GET) && $_GET['nome'] != '') {
     $tarefa = [];
+    $tarefa['id'] = $_GET['id'];
     $tarefa['nome'] = $_GET['nome'];
+
     if (array_key_exists('descricao', $_GET)) {
         $tarefa['descricao'] = $_GET['descricao'];
     } else {
         $tarefa['descricao'] = '';
     }
     if (array_key_exists('prazo', $_GET)) {
-        // $tarefa['prazo'] = $_GET['prazo'];
-        $tarefa['prazo'] = traduz_data_para_banco($_GET['prazo']);
+        $tarefa['prazo'] = traduz_data_para_exibir($_GET['prazo']);
     } else {
         $tarefa['prazo'] = '';
     }
     $tarefa['prioridade'] = $_GET['prioridade'];
+
     if (array_key_exists('concluida', $_GET)) {
-        // $tarefa['concluida'] = $_GET['concluida'];
         $tarefa['concluida'] = 1;
     } else {
         $tarefa['concluida'] = 0;
     }
-    // $_SESSION['lista_tarefas'][] = $tarefa;
-    gravar_tarefa($conexao, $tarefa);
+    editar_tarefa($conexao, $tarefa);
     header('Location: template.php');
     die();
 }
+$tarefa = buscar_tarefa($conexao, $_GET['id']);
+// require "template.php";
+?>
 
-$lista_tarefas = buscar_tarefas($conexao);
-// $lista_tarefas = [];
+<!DOCTYPE html>
+<html lang="en">
 
-// if (array_key_exists('lista_tarefas', $_SESSION)) {
-//     $lista_tarefas = $_SESSION['lista_tarefas'];
-// }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pag. Edicao</title>
+</head>
+
+<body>
+    <?php require "formulario.php" ?>
+</body>
+
+</html>
