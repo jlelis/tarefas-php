@@ -18,7 +18,7 @@
             <th>Prazo</th>
             <th>Prioridade</th>
             <th>Concluída</th>
-            <th>Opções</th>
+            <th colspan="2">Opções</th>
         </tr>
         <?php foreach ($lista_tarefas as $tarefa) : ?>
             <tr>

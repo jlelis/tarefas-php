@@ -1,7 +1,9 @@
 <?php
 require "banco.php";
 remover_tarefa($conexao, $_GET['id']);
-header('Location: template.php'); ?>
+header('Location: tarefas.php');
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 

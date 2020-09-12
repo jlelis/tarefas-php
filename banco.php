@@ -25,7 +25,7 @@ function buscar_tarefas($conexao)
 }
 function gravar_tarefa($conexao, $tarefa)
 {
-    var_dump($tarefa);
+    // var_dump($tarefa);
     $sqlGravar = "INSERT INTO tarefas
     (nome, descricao, prioridade, prazo, concluida)
     VALUES
@@ -55,12 +55,13 @@ function editar_tarefa($conexao, $tarefa)
     concluida = {$tarefa['concluida']}
     WHERE id = {$tarefa['id']}
 ";
-    // var_dump($sqlEditar);
-    mysqli_query($conexao, $sqlEditar);
+    var_dump($sqlEditar);
+    // mysqli_query($conexao, $sqlEditar);
 }
 
 function remover_tarefa($conexao, $id)
 {
     $sqlRemover = "DELETE FROM tarefas WHERE id={$id}";
+    //var_dump($sqlRemover);
     mysqli_query($conexao, $sqlRemover);
 }
