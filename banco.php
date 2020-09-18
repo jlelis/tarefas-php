@@ -65,3 +65,14 @@ function remover_tarefa($conexao, $id)
     //var_dump($sqlRemover);
     mysqli_query($conexao, $sqlRemover);
 }
+function gravar_anexo($conexao, $anexo)
+{
+    $sqlGravar = "INSERT INTO anexos (tarefa_id,nome,arquivo)
+    values(
+        {$anexo['tarefa_id']},
+        {$anexo['nome']},
+        {$anexo['arquivo']}
+    )
+    ";
+    mysqli_query($conexao, $sqlGravar);
+}
