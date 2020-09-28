@@ -68,6 +68,8 @@ if (tem_post()) {
 }
 
 $lista_tarefas = buscar_tarefas($conexao);
+$tarefa = buscar_tarefa($conexao, $_GET['id']);
+$anexo = buscar_anexos($conexao, $_GET['id']);
 // $lista_tarefas = [];
 
 // if (array_key_exists('lista_tarefas', $_SESSION)) {

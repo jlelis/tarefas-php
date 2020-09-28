@@ -1,11 +1,11 @@
 <?php
 
-$bdServidor = '127.0.0.1';
-$bdUsuario = 'root';
-$bdSenha = '';
-$dbBanco = 'tarefas';
+// $bdServidor = '127.0.0.1';
+// $bdUsuario = 'root';
+// $bdSenha = '';
+// $dbBanco = 'tarefas';
 
-$conexao = mysqli_connect($bdServidor, $bdUsuario, $bdSenha, $dbBanco);
+$conexao = mysqli_connect(BD_SERVIDOR, BD_USUARIO, BD_SENHA, BD_BANCO);
 
 if (mysqli_connect_errno($conexao)) {
     echo "Não foi possivel conectar no banco. Erro: ";
@@ -75,4 +75,28 @@ function gravar_anexo($conexao, $anexo)
     )
     ";
     mysqli_query($conexao, $sqlGravar);
+}
+function buscar_anexos($conexao, $tarefa_id)
+{
+    $sql = "SELECT * FROM anexos WHERE tarefa_id = {$tarefa_id}";
+
+    $resultado = mysqli_query($conexao, $sql);
+
+    $anexos = [];
+
+    while ($anexo = mysqli_fetch_assoc($resultado)) {
+        $anexos[] = $anexo;
+    }
+    return $anexos;
+}
+function remover_anexo($conexao, $id)
+{
+    $sqlRemover = "DELETE FROM anexos WHERE id={$id}";
+    mysqli_query($conexao, $sqlRemover);
+}
+function buscar_anexo($conexao, $id)
+{
+    $sqlBusca = 'SELECT * FROM anexos WHERE id=' . $id;
+    $resultado = mysqli_query($conexao, $sqlBusca);
+    return mysqli_fetch_assoc($resultado);
 }
