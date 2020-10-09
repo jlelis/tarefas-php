@@ -54,6 +54,9 @@ if (tem_post()) {
     // $_SESSION['lista_tarefas'][] = $tarefa;
     if (!$tem_erros) {
         gravar_tarefa($conexao, $tarefa);
+        if (array_key_exists('lembrete', $_GET) && $_GET['lembrete'] == '1') {
+            enviar_email($tarefa);
+        }
         header('Location: tarefas.php');
         die();
     }

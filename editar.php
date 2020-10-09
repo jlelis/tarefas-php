@@ -45,6 +45,11 @@ if (tem_post()) {
     }
     if (!$tem_erros) {
         editar_tarefa($conexao, $tarefa);
+
+        if (array_key_exists('lembrete', $_GET) && $_GET['lembrete'] == '1') {
+            $anexos = buscar_anexos($conexao, $tarefa['id']);
+            enviar_email($tarefa, $anexos);
+        }
         header('Location: tarefas.php');
         die();
     }

@@ -86,3 +86,21 @@ function tratar_anexo($anexo)
     );
     return true;
 }
+function enviar_email($tarefa, $anexos = [])
+{
+    // Acessar a aplicação de e-mails;
+    // Fazer a autenticação com usuário e senha;
+    // Usar a opção para escrever um e-mail;
+    // Digitar o e-mail do destinatário;
+    // Digitar o assunto do e-mail;
+    // Escrever o corpo do e-mail;
+    // Adicionar os anexos, quando necessário;
+    // Usar a opção de enviar o e-mail.    # code...
+    $corpo = include 'templete_email.php';
+}
+function gravar_log($mensagem)
+{
+    $datahora = date("Y-m-d H:i:s");
+    $mensagem = "{$datahora} {$mensagem}\n";
+    file_put_contents("mensagens.log", $mensagem, FILE_APPEND);
+}

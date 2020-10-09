@@ -1,5 +1,5 @@
 <?php
-
+include "config.php";
 // $bdServidor = '127.0.0.1';
 // $bdUsuario = 'root';
 // $bdSenha = '';
