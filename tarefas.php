@@ -1,80 +1,70 @@
 <?php
-session_start();
-require "banco.php";
-require "ajudantes.php";
+
+include "config.php";
+include "banco.php";
+include "ajudantes.php";
 
 $exibir_tabela = true;
-$tarefa = [
-    'id' => 0,
-    'nome' => '',
-    'descricao' => '',
-    'prazo' => '',
-    'prioridade' => 1,
-    'concluida' => ''
-];
+
 $tem_erros = false;
-$erros_validacao = [];
+$erros_validacao = array();
 
-// if (array_key_exists('nome', $_GET) && $_GET['nome'] != '') {
 if (tem_post()) {
+    $tarefa = array();
 
-
-    $tarefa = [];
-    // $tarefa['nome'] = $_GET['nome'];
-    if (array_key_exists($tarefa['nome'], $_GET) && strlen($_GET['nome'] > 0)) {
-        $tarefa['nome'] = $_GET['nome'];
+    if (isset($_POST['nome']) && strlen($_POST['nome']) > 0) {
+        $tarefa['nome'] = $_POST['nome'];
     } else {
         $tem_erros = true;
-        $erros_validacao['nome'] = 'O nome da tarefa é obrigatorio!';
+        $erros_validacao['nome'] = 'O nome da tarefa é obrigatório!';
     }
 
-    if (array_key_exists('descricao', $_GET)) {
-        $tarefa['descricao'] = $_GET['descricao'];
+    if (isset($_POST['descricao'])) {
+        $tarefa['descricao'] = $_POST['descricao'];
     } else {
         $tarefa['descricao'] = '';
     }
-    if (array_key_exists('prazo', $_GET) && strlen($_GET['prazo'] > 0)) {
-        // $tarefa['prazo'] = $_GET['prazo'];
-        if (validar_data($_GET['prazo'])) {
-            $tarefa['prazo'] = traduz_data_para_banco($_GET['prazo']);
+
+    if (isset($_POST['prazo']) && strlen($_POST['prazo']) > 0) {
+        if (validar_data($_POST['prazo'])) {
+            $tarefa['prazo'] = traduz_data_para_banco($_POST['prazo']);
         } else {
             $tem_erros = true;
-            $erros_validacao['prazo'] = 'o prazo não é uma data valida!';
+            $erros_validacao['prazo'] = 'O prazo não é uma data válida!';
         }
     } else {
         $tarefa['prazo'] = '';
     }
-    $tarefa['prioridade'] = $_GET['prioridade'];
-    if (array_key_exists('concluida', $_GET)) {
-        // $tarefa['concluida'] = $_GET['concluida'];
+
+    $tarefa['prioridade'] = $_POST['prioridade'];
+
+    if (isset($_POST['concluida'])) {
         $tarefa['concluida'] = 1;
     } else {
         $tarefa['concluida'] = 0;
     }
-    // $_SESSION['lista_tarefas'][] = $tarefa;
-    if (!$tem_erros) {
+
+    if (! $tem_erros) {
         gravar_tarefa($conexao, $tarefa);
-        if (array_key_exists('lembrete', $_GET) && $_GET['lembrete'] == '1') {
+
+        if (isset($_POST['lembrete']) && $_POST['lembrete'] == '1') {
             enviar_email($tarefa);
         }
+
         header('Location: tarefas.php');
         die();
     }
-    $tarefa = [
-        'id' => 0,
-        'nome' => (array_key_exists('nome', $_GET)) ? $_GET['nome'] : '',
-        'descricao' => (array_key_exists('descricao', $_GET)) ? $_GET['descricao'] : '',
-        'prazo' => (array_key_exists('prazo', $_GET)) ? traduz_data_para_banco($_GET['prazo']) : '',
-        'prioridade' => (array_key_exists('prioridade', $_GET)) ? $_GET['prioridade'] : '',
-        'concluida' => (array_key_exists('concluida', $_GET)) ? $_GET['concluida'] : ''
-    ];
 }
 
 $lista_tarefas = buscar_tarefas($conexao);
-$tarefa = buscar_tarefa($conexao, $_GET['id']);
-$anexo = buscar_anexos($conexao, $_GET['id']);
-// $lista_tarefas = [];
 
-// if (array_key_exists('lista_tarefas', $_SESSION)) {
-//     $lista_tarefas = $_SESSION['lista_tarefas'];
-// }
+$tarefa = array(
+    'id'         => 0,
+    'nome'       => (isset($_POST['nome'])) ? $_POST['nome'] : '',
+    'descricao'  => (isset($_POST['descricao'])) ? $_POST['descricao'] : '',
+    'prazo'      => (isset($_POST['prazo'])) ? traduz_data_para_banco($_POST['prazo']) : '',
+    'prioridade' => (isset($_POST['prioridade'])) ? $_POST['prioridade'] : 1,
+    'concluida'  => (isset($_POST['concluida'])) ? $_POST['concluida'] : ''
+);
+
+include "template.php";

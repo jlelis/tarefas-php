@@ -1,106 +1,174 @@
 <?php
-function traduz_prioridade($codigo)
-{
-    $prioridade = '';
-    switch ($codigo) {
-        case '1':
-            $prioridade = 'Baixa';
-            break;
-        case '2':
-            $prioridade = 'Media';
-            break;
-        case '3':
-            $prioridade = 'Alta';
-            break;
-    }
-    return $prioridade;
-}
-function traduz_data_para_banco($data)
-{
-    if ($data == "") {
-        return "";
-    }
-    $partes = explode("/", $data);
 
-    if (count($partes) != 3) {
-        return $data;
-    }
-    // $data_banco = "{$dados[2]}-{$dados[1]}-{$dados[0]}";
-    $objeto_data = DateTime::createFromFormat('d/m/y', $data);
-
-    return $objeto_data->format('Y-m-d');
-}
-function traduz_data_para_exibir($data)
-{
-    if ($data == "" or $data == "0000-00-00") {
-        return "";
-    }
-    $partes = explode("-", $data);
-    // $data_exibir = "{$dados[2]}-{$dados[1]}-{$dados[0]}";
-    if (count($partes) != 3) {
-        return $data;
-    }
-    $objeto_data = DateTime::createFromFormat('Y-m-d', $data);
-
-    return $objeto_data->format('d/m/Y');
-}
-function traduz_concluida($concluida)
-{
-    if ($concluida == 1) {
-        return 'Sim';
-    }
-    return 'Não';
-}
 function tem_post()
 {
-    if (count($_GET) > 0) {
+    if (count($_POST) > 0) {
         return true;
     }
+
     return false;
 }
+
+function enviar_email($tarefa, $anexos = array())
+{
+    include "bibliotecas/PHPMailer/PHPMailerAutoload.php";
+
+    $corpo = preparar_corpo_email($tarefa, $anexos);
+
+    $email = new PHPMailer();
+
+    $email->isSMTP();
+    $email->Host = "smtp.mailtrap.io";
+    $email->Port = 587;
+    $email->SMTPSecure = 'tls';
+    $email->SMTPAuth = true;
+    $email->Username = "6672d545e2ca5c";
+    $email->Password = "f1fcdd05abd35a";
+    $email->setFrom("d9cd63f1ac-319082@inbox.mailtrap.io", "Avisador de Tarefas");
+    $email->addAddress(EMAIL_NOTIFICACAO);
+    $email->Subject = "Aviso de tarefa: {$tarefa['nome']}";
+    $email->msgHTML($corpo);
+
+    foreach ($anexos as $anexo) {
+        $email->addAttachment("anexos/{$anexo['arquivo']}");
+    }
+
+    $email->send();
+}
+
+function preparar_corpo_email($tarefa, $anexos)
+{
+    ob_start();
+    include "template_email.php";
+
+    $corpo = ob_get_contents();
+
+    ob_end_clean();
+
+    return $corpo;
+}
+
+function montar_email()
+{
+    $tem_anexos = '';
+
+    if (count($anexos) > 0) {
+        $tem_anexos = "<p><strong>Atenção!</strong> Esta tarefa contém anexos!</p>";
+    }
+
+    $corpo = "
+        <html>
+            <head>
+                <meta charset=\"utf-8\" />
+                <title>Gerenciador de Tarefas</title>
+                <link rel=\"stylesheet\" href=\"tarefas.css\" type=\"text/css\" />
+            </head>
+            <body>
+                <h1>Tarefa: {$tarefa['nome']}</h1>
+
+                <p><strong>Concluída:</strong> " . traduz_concluida($tarefa['concluida']) . "</p>
+                <p><strong>Descrição:</strong> " . nl2br($tarefa['descricao']) . "</p>
+                <p><strong>Prazo:</strong> " . traduz_data_para_exibir($tarefa['prazo']) . "</p>
+                <p><strong>Prioridade:</strong> " . traduz_prioridade($tarefa['prioridade']) . "</p>
+
+                {$tem_anexos}
+
+            </body>
+        </html>
+    ";
+}
+
+function tratar_anexo($anexo)
+{
+    $padrao = '/^.+(\.pdf$|\.zip$)$/';
+    $resultado = preg_match($padrao, $anexo['name']);
+
+    if (!$resultado) {
+        return false;
+    }
+
+    move_uploaded_file($anexo['tmp_name'], "anexos/{$anexo['name']}");
+
+    return true;
+}
+
 function validar_data($data)
 {
     $padrao = '/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}$/';
     $resultado = preg_match($padrao, $data);
-    if ($resultado == 0) {
+
+    if (!$resultado) {
         return false;
     }
+
     $dados = explode('/', $data);
+
     $dia = $dados[0];
     $mes = $dados[1];
     $ano = $dados[2];
 
     $resultado = checkdate($mes, $dia, $ano);
+
     return $resultado;
 }
-function tratar_anexo($anexo)
+
+function traduz_concluida($concluida)
 {
-    $padrao = '/^.+(\.pdf|\.zip)$/';
-    $resultado =  preg_match($padrao, $anexo['name']);
-    if ($resultado == 0) {
-        return false;
+    if ($concluida == 1) {
+        return 'Sim';
     }
-    move_uploaded_file(
-        $anexo['tmp_name'],
-        "anexos/{$anexo['name']}"
-    );
-    return true;
+
+    return 'Não';
 }
-function enviar_email($tarefa, $anexos = [])
+
+function traduz_prioridade($codigo)
 {
-    // Acessar a aplicação de e-mails;
-    // Fazer a autenticação com usuário e senha;
-    // Usar a opção para escrever um e-mail;
-    // Digitar o e-mail do destinatário;
-    // Digitar o assunto do e-mail;
-    // Escrever o corpo do e-mail;
-    // Adicionar os anexos, quando necessário;
-    // Usar a opção de enviar o e-mail.    # code...
-    $corpo = include 'templete_email.php';
+    $prioridade = '';
+    switch ($codigo) {
+        case 1:
+            $prioridade = 'Baixa';
+            break;
+        case 2:
+            $prioridade = 'Média';
+            break;
+        case 3:
+            $prioridade = 'Alta';
+            break;
+    }
+
+    return $prioridade;
 }
-function gravar_log($mensagem)
+
+function traduz_data_para_banco($data)
 {
-    $datahora = date("Y-m-d H:i:s");
-    $mensagem = "{$datahora} {$mensagem}\n";
-    file_put_contents("mensagens.log", $mensagem, FILE_APPEND);
+    if ($data == "") {
+        return "";
+    }
+
+    $dados = explode("/", $data);
+
+    if (count($dados) != 3) {
+        return $data;
+    }
+
+    $data_mysql = "{$dados[2]}-{$dados[1]}-{$dados[0]}";
+
+    return $data_mysql;
+}
+
+function traduz_data_para_exibir($data)
+{
+    if ($data == "" or $data == "0000-00-00") {
+        return "";
+    }
+
+    $dados = explode("-", $data);
+
+    if (count($dados) != 3) {
+        return $data;
+    }
+
+    $data_exibir = "{$dados[2]}/{$dados[1]}/{$dados[0]}";
+
+    return $data_exibir;
 }

@@ -1,74 +1,72 @@
 <?php
+
 session_start();
-require "banco.php";
-require "ajudantes.php";
+
+include "config.php";
+include "banco.php";
+include "ajudantes.php";
 
 $exibir_tabela = false;
 $tem_erros = false;
-$erros_validacao = [];
+$erros_validacao = array();
 
-// if (array_key_exists('nome', $_GET) && $_GET['nome'] != '') {
 if (tem_post()) {
-    # code...
+    $tarefa = array();
 
-    $tarefa = [];
-    $tarefa['id'] = $_GET['id'];
+    $tarefa['id'] = $_POST['id'];
 
-    if (array_key_exists('nome', $_GET) && strlen($_GET['nome']) > 0) {
-        $tarefa['nome'] = $_GET['nome'];
+    if (isset($_POST['nome']) && strlen($_POST['nome']) > 0) {
+        $tarefa['nome'] = $_POST['nome'];
     } else {
         $tem_erros = true;
-        $erros_validacao['nome'] = 'o nome da tarefa é obrigatorio!';
+        $erros_validacao['nome'] = 'O nome da tarefa é obrigatório!';
     }
 
-    if (array_key_exists('descricao', $_GET)) {
-        $tarefa['descricao'] = $_GET['descricao'];
+    if (isset($_POST['descricao'])) {
+        $tarefa['descricao'] = $_POST['descricao'];
     } else {
         $tarefa['descricao'] = '';
     }
-    if (array_key_exists('prazo', $_GET) && strlen($_GET['prazo']) > 0) {
-        if (validar_data($_GET['prazo'])) {
-            $tarefa['prazo'] = traduz_data_para_banco($_GET['prazo']);
+
+    if (isset($_POST['prazo']) && strlen($_POST['prazo']) > 0) {
+        if (validar_data($_POST['prazo'])) {
+            $tarefa['prazo'] = traduz_data_para_banco($_POST['prazo']);
         } else {
             $tem_erros = true;
-            $erros_validacao['prazo'] = 'O Prazp não é uma data valida!';
+            $erros_validacao['prazo'] = 'O prazo não é uma data válida!';
         }
     } else {
         $tarefa['prazo'] = '';
     }
-    $tarefa['prioridade'] = $_GET['prioridade'];
 
-    if (array_key_exists('concluida', $_GET)) {
+    $tarefa['prioridade'] = $_POST['prioridade'];
+
+    if (isset($_POST['concluida'])) {
         $tarefa['concluida'] = 1;
     } else {
         $tarefa['concluida'] = 0;
     }
-    if (!$tem_erros) {
+
+    if (! $tem_erros) {
         editar_tarefa($conexao, $tarefa);
 
-        if (array_key_exists('lembrete', $_GET) && $_GET['lembrete'] == '1') {
+        if (isset($_POST['lembrete']) && $_POST['lembrete'] == '1') {
             $anexos = buscar_anexos($conexao, $tarefa['id']);
+
             enviar_email($tarefa, $anexos);
         }
+
         header('Location: tarefas.php');
         die();
     }
 }
+
 $tarefa = buscar_tarefa($conexao, $_GET['id']);
-// require "template.php";
-?>
 
-<!DOCTYPE html>
-<html lang="en">
+$tarefa['nome'] = (isset($_POST['nome'])) ? $_POST['nome'] : $tarefa['nome'];
+$tarefa['descricao'] = (isset($_POST['descricao'])) ? $_POST['descricao'] : $tarefa['descricao'];
+$tarefa['prazo'] = (isset($_POST['prazo'])) ? $_POST['prazo'] : $tarefa['prazo'];
+$tarefa['prioridade'] = (isset($_POST['prioridade'])) ? $_POST['prioridade'] : $tarefa['prioridade'];
+$tarefa['concluida'] = (isset($_POST['concluida'])) ? $_POST['concluida'] : $tarefa['concluida'];
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pag. Edicao</title>
-</head>
-
-<body>
-    <?php require "formulario.php" ?>
-</body>
-
-</html>
+include "template.php";
