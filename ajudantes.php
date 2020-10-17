@@ -17,6 +17,8 @@ function enviar_email($tarefa, $anexos = array())
 
     $email = new PHPMailer();
 
+    $email->CharSet = "utf-8";
+    $email->Encoding = "base64";
     $email->isSMTP();
     $email->Host = "smtp.mailtrap.io";
     $email->Port = 587;
