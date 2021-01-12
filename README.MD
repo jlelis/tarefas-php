@@ -1,8 +1,8 @@
 ### Projeto: Cadastro de Tarefa(s) com anexo(s) e notificação por e-mail
 
-#### Conteúdo do material do autor Evaldo Junior do livro <a href="https://www.casadocodigo.com.br/products/livro-php-mysql?_pos=1&_sid=f680cd899&_ss=r" target="_blank"> Desenvolvimento web com PHP e MySQL </a>
+#### Conteúdo do material do livro autor Evaldo Junior <a href="https://www.casadocodigo.com.br/products/livro-php-mysql?_pos=1&_sid=f680cd899&_ss=r" target="_blank"> Desenvolvimento web com PHP e MySQL </a>
 
-##### Utilizando: **HTML - CSS - JS com Banco de Dados - MySql**
+##### Utilizando: **HTML - CSS - JS - MySql**
 
 ###### Imagen(s):
 
